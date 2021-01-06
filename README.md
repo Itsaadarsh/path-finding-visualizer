@@ -1,1 +1,1 @@
-# Data-Structures-Algorithms
+# Path Finding Visualizer
