@@ -1,5 +1,5 @@
-const cols = 25;
-const rows = 25;
+const cols = 60;
+const rows = 60;
 const grid = new Array(cols);
 const openSet = [];
 const closedSet = [];
@@ -15,7 +15,7 @@ class NodeSpot {
     this.neighbors = [];
     this.parent = null;
     this.wall = false;
-    if (random(1) > 0.7) this.wall = true;
+    if (random(1) > 0.5) this.wall = true;
   }
 
   addNeighbors(grid) {
@@ -114,17 +114,22 @@ function draw() {
     for (let i = 0; i < neighbors.length; i++) {
       if (!closedSet.includes(neighbors[i]) && !neighbors[i].wall) {
         const tempG = current.g + 1;
+        let newPath = false;
         if (openSet.includes(neighbors[i])) {
           if (tempG < neighbors[i].g) {
             neighbors[i].g = tempG;
+            newPath = true;
           }
         } else {
           neighbors[i].g = tempG;
           openSet.push(neighbors[i]);
+          newPath = true;
         }
-        neighbors[i].h = heuristic(neighbors[i], end);
-        neighbors[i].f = neighbors[i].g + neighbors[i].h;
-        neighbors[i].parent = current;
+        if (newPath) {
+          neighbors[i].h = heuristic(neighbors[i], end);
+          neighbors[i].f = neighbors[i].g + neighbors[i].h;
+          neighbors[i].parent = current;
+        }
       }
     }
   } else {
