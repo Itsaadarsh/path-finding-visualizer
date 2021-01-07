@@ -4,6 +4,7 @@ const grid = new Array(cols);
 const openSet = [];
 const closedSet = [];
 var w, h, start, end, path;
+var noSol = false;
 
 class NodeSpot {
   constructor(i, j) {
@@ -15,7 +16,6 @@ class NodeSpot {
     this.neighbors = [];
     this.parent = null;
     this.wall = false;
-
     if (random(1) > 0.7) this.wall = true;
   }
 
@@ -41,6 +41,7 @@ const heuristic = (a, b) => {
 
 function setup() {
   createCanvas(800, 800);
+  noLoop();
   w = width / cols;
   h = height / rows;
 
@@ -64,6 +65,16 @@ function setup() {
   end.wall = false;
   openSet.push(start);
 }
+
+const start_finder = () => {
+  loop();
+};
+const stop_finder = () => {
+  noLoop();
+};
+const reset_finder = () => {
+  location.reload();
+};
 
 function draw() {
   if (openSet.length > 0) {
@@ -108,6 +119,9 @@ function draw() {
         neighbors[i].parent = current;
       }
     }
+  } else {
+    noSol = true;
+    noLoop();
   }
 
   for (let i = 0; i < cols; i++) {
@@ -124,12 +138,14 @@ function draw() {
     openSet[i].display(color(0, 255, 0));
   }
 
-  path = [];
-  var temp = current;
-  path.push(temp);
-  while (temp.parent) {
-    path.push(temp.parent);
-    temp = temp.parent;
+  if (!noSol) {
+    path = [];
+    var temp = current;
+    path.push(temp);
+    while (temp.parent) {
+      path.push(temp.parent);
+      temp = temp.parent;
+    }
   }
   for (let i = 0; i < path.length; i++) {
     path[i].display(color(0, 0, 255));
