@@ -1,5 +1,5 @@
-const cols = 60;
-const rows = 60;
+const cols = 50;
+const rows = 50;
 const grid = new Array(cols);
 const openSet = [];
 const closedSet = [];
@@ -15,7 +15,7 @@ class NodeSpot {
     this.neighbors = [];
     this.parent = null;
     this.wall = false;
-    if (random(1) > 0.5) this.wall = true;
+    if (random(1) > 0.6) this.wall = true;
   }
 
   addNeighbors(grid) {
@@ -34,14 +34,17 @@ class NodeSpot {
 
   display(color) {
     fill(color);
-    if (this.wall) fill(0);
+    if (this.wall) {
+      fill('#222831');
+    }
     stroke(0);
     rect(this.i * w, this.j * h, w - 1, h - 1);
   }
 }
 
 function setup() {
-  createCanvas(800, 800);
+  let cnv = createCanvas(1500, 800);
+  cnv.position(120, 60);
   w = width / cols;
   h = height / rows;
 
@@ -59,7 +62,7 @@ function setup() {
   }
 
   start = grid[0][0];
-  end = grid[cols - 1][rows - 1];
+  end = grid[cols - 30][rows - 10];
   end.wall = false;
   start.wall = false;
   openSet.push(start);
@@ -81,8 +84,6 @@ const stop_finder = () => {
 const reset_finder = () => {
   location.reload();
 };
-
-function mousePressed() {}
 
 function draw() {
   if (openSet.length > 0) {
@@ -139,19 +140,19 @@ function draw() {
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      grid[i][j].display(color(255));
+      grid[i][j].display(color('#ececec'));
     }
   }
 
   for (let i = 0; i < closedSet.length; i++) {
-    closedSet[i].display(color(255, 0, 0));
+    closedSet[i].display(color('#ff0000'));
   }
 
   for (let i = 0; i < openSet.length; i++) {
-    openSet[i].display(color(0, 255, 0));
+    openSet[i].display(color('#14ffec'));
   }
 
-  end.display(color(251, 112, 20));
+  end.display(color('#ff0000'));
 
   path = [];
   var temp = current;
@@ -161,6 +162,6 @@ function draw() {
     temp = temp.parent;
   }
   for (let i = 0; i < path.length; i++) {
-    path[i].display(color(0, 0, 255));
+    path[i].display(color('#ffd700'));
   }
 }
