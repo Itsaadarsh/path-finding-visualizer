@@ -4,7 +4,6 @@ const grid = new Array(cols);
 const openSet = [];
 const closedSet = [];
 var w, h, start, end, path;
-var noSol = false;
 
 class NodeSpot {
   constructor(i, j) {
@@ -19,11 +18,18 @@ class NodeSpot {
     if (random(1) > 0.7) this.wall = true;
   }
 
-  addNeighbors(gird) {
+  addNeighbors(grid) {
+    // Up, Down, Left, Right
     if (this.i < cols - 1) this.neighbors.push(grid[this.i + 1][this.j]);
     if (this.i > 0) this.neighbors.push(grid[this.i - 1][this.j]);
     if (this.j < rows - 1) this.neighbors.push(grid[this.i][this.j + 1]);
     if (this.j > 0) this.neighbors.push(grid[this.i][this.j - 1]);
+
+    // Diagonal
+    if (this.i > 0 && this.j > 0) this.neighbors.push(grid[this.i - 1][this.j - 1]);
+    if (this.i < cols - 1 && this.j > 0) this.neighbors.push(grid[this.i + 1][this.j - 1]);
+    if (this.i > 0 && this.j < rows - 1) this.neighbors.push(grid[this.i - 1][this.j + 1]);
+    if (this.i < cols - 1 && this.j < rows - 1) this.neighbors.push(grid[this.i + 1][this.j + 1]);
   }
 
   display(color) {
@@ -34,14 +40,8 @@ class NodeSpot {
   }
 }
 
-const heuristic = (a, b) => {
-  // return dist(a.i, a.j, b.i, b.j); // Euclidean Distance
-  return abs(a.i - b.i) + abs(a.j - b.j); // Manhattan Distance
-};
-
 function setup() {
   createCanvas(800, 800);
-  noLoop();
   w = width / cols;
   h = height / rows;
 
@@ -59,22 +59,30 @@ function setup() {
   }
 
   start = grid[0][0];
-  end = grid[cols - 1][rows - 1]; // To the END point of the matrix
-  // end = grid[15][15];
-  start.wall = false;
+  end = grid[cols - 1][rows - 1];
   end.wall = false;
+  start.wall = false;
   openSet.push(start);
+  noLoop();
 }
+
+const heuristic = (a, b) => {
+  return abs(a.i - b.i) + abs(a.j - b.j);
+};
 
 const start_finder = () => {
   loop();
 };
+
 const stop_finder = () => {
   noLoop();
 };
+
 const reset_finder = () => {
   location.reload();
 };
+
+function mousePressed() {}
 
 function draw() {
   if (openSet.length > 0) {
@@ -120,8 +128,8 @@ function draw() {
       }
     }
   } else {
-    noSol = true;
     noLoop();
+    return;
   }
 
   for (let i = 0; i < cols; i++) {
@@ -138,14 +146,14 @@ function draw() {
     openSet[i].display(color(0, 255, 0));
   }
 
-  if (!noSol) {
-    path = [];
-    var temp = current;
-    path.push(temp);
-    while (temp.parent) {
-      path.push(temp.parent);
-      temp = temp.parent;
-    }
+  end.display(color(251, 112, 20));
+
+  path = [];
+  var temp = current;
+  path.push(temp);
+  while (temp.parent) {
+    path.push(temp.parent);
+    temp = temp.parent;
   }
   for (let i = 0; i < path.length; i++) {
     path[i].display(color(0, 0, 255));
