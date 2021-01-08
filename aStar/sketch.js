@@ -15,7 +15,7 @@ class NodeSpot {
     this.neighbors = [];
     this.parent = null;
     this.wall = false;
-    if (random(1) > 0.6) this.wall = true;
+    if (random(1) > 0.5) this.wall = true;
   }
 
   addNeighbors(grid) {
@@ -43,7 +43,7 @@ class NodeSpot {
 }
 
 function setup() {
-  let cnv = createCanvas(1500, 800);
+  let cnv = createCanvas(800, 800);
   cnv.position(120, 60);
   w = width / cols;
   h = height / rows;
@@ -62,7 +62,7 @@ function setup() {
   }
 
   start = grid[0][0];
-  end = grid[cols - 30][rows - 10];
+  end = grid[cols - 31][rows - 16];
   end.wall = false;
   start.wall = false;
   openSet.push(start);
@@ -85,54 +85,59 @@ const reset_finder = () => {
   location.reload();
 };
 
-function draw() {
-  if (openSet.length > 0) {
-    let startingIndex = 0;
-    for (let i = 0; i < openSet.length; i++) {
-      if (openSet[i].f < openSet[startingIndex].f) {
-        startingIndex = i;
-      }
+const aStarAlgo = () => {
+  let startingIndex = 0;
+  for (let i = 0; i < openSet.length; i++) {
+    if (openSet[i].f < openSet[startingIndex].f) {
+      startingIndex = i;
     }
-    var current = openSet[startingIndex];
+  }
+  var current = openSet[startingIndex];
 
-    if (current === end) {
-      noLoop();
-    }
+  if (current === end) {
+    noLoop();
+  }
 
-    const removeIndex = openSet.indexOf(current);
-    if (removeIndex > -1) {
-      openSet.splice(removeIndex, 1);
-    }
+  const removeIndex = openSet.indexOf(current);
+  if (removeIndex > -1) {
+    openSet.splice(removeIndex, 1);
+  }
 
-    closedSet.push(current);
+  closedSet.push(current);
 
-    for (let i = 0; i < start.neighbors.length; i++) {
-      start.neighbors[i].wall = false;
-      end.neighbors[i].wall = false;
-    }
+  for (let i = 0; i < start.neighbors.length; i++) {
+    start.neighbors[i].wall = false;
+    end.neighbors[i].wall = false;
+  }
 
-    const neighbors = current.neighbors;
-    for (let i = 0; i < neighbors.length; i++) {
-      if (!closedSet.includes(neighbors[i]) && !neighbors[i].wall) {
-        const tempG = current.g + 1;
-        let newPath = false;
-        if (openSet.includes(neighbors[i])) {
-          if (tempG < neighbors[i].g) {
-            neighbors[i].g = tempG;
-            newPath = true;
-          }
-        } else {
+  const neighbors = current.neighbors;
+  for (let i = 0; i < neighbors.length; i++) {
+    if (!closedSet.includes(neighbors[i]) && !neighbors[i].wall) {
+      const tempG = current.g + 1;
+      let newPath = false;
+      if (openSet.includes(neighbors[i])) {
+        if (tempG < neighbors[i].g) {
           neighbors[i].g = tempG;
-          openSet.push(neighbors[i]);
           newPath = true;
         }
-        if (newPath) {
-          neighbors[i].h = heuristic(neighbors[i], end);
-          neighbors[i].f = neighbors[i].g + neighbors[i].h;
-          neighbors[i].parent = current;
-        }
+      } else {
+        neighbors[i].g = tempG;
+        openSet.push(neighbors[i]);
+        newPath = true;
+      }
+      if (newPath) {
+        neighbors[i].h = heuristic(neighbors[i], end);
+        neighbors[i].f = neighbors[i].g + neighbors[i].h;
+        neighbors[i].parent = current;
       }
     }
+  }
+  return current;
+};
+
+function draw() {
+  if (openSet.length > 0) {
+    current = aStarAlgo();
   } else {
     noLoop();
     return;
