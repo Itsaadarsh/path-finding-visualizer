@@ -14,8 +14,8 @@ class NodeSpot {
     this.h = 0;
     this.neighbors = [];
     this.parent = null;
-    this.wall = false;
-    if (random(1) > 0.5) this.wall = true;
+    this.isWall = false;
+    if (random(1) > 0.5) this.isWall = true;
   }
 
   addNeighbors(grid) {
@@ -34,7 +34,7 @@ class NodeSpot {
 
   display(color) {
     fill(color);
-    if (this.wall) {
+    if (this.isWall) {
       fill('#222831');
     }
     stroke(0);
@@ -63,8 +63,8 @@ function setup() {
 
   start = grid[0][0];
   end = grid[cols - 31][rows - 16];
-  end.wall = false;
-  start.wall = false;
+  end.isWall = false;
+  start.isWall = false;
   openSet.push(start);
   noLoop();
 }
@@ -106,13 +106,13 @@ const aStarAlgo = () => {
   closedSet.push(current);
 
   for (let i = 0; i < start.neighbors.length; i++) {
-    start.neighbors[i].wall = false;
-    end.neighbors[i].wall = false;
+    start.neighbors[i].isWall = false;
+    end.neighbors[i].isWall = false;
   }
 
   const neighbors = current.neighbors;
   for (let i = 0; i < neighbors.length; i++) {
-    if (!closedSet.includes(neighbors[i]) && !neighbors[i].wall) {
+    if (!closedSet.includes(neighbors[i]) && !neighbors[i].isWall) {
       const tempG = current.g + 1;
       let newPath = false;
       if (openSet.includes(neighbors[i])) {
