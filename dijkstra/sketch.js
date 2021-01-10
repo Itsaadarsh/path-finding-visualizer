@@ -2,6 +2,8 @@ const cols = 30;
 const rows = 30;
 const grid = new Array(cols);
 var w, h, start, end, path;
+var visited = [];
+var Q = [];
 
 class NodeSpot {
   constructor(i, j) {
@@ -39,7 +41,6 @@ class NodeSpot {
   }
 }
 
-var Q = [];
 function setup() {
   let cnv = createCanvas(800, 800);
   cnv.position(120, 60);
@@ -64,6 +65,7 @@ function setup() {
   end = grid[cols - 1][rows - 1];
   end.isWall = false;
   start.isWall = false;
+  start.dist = 0;
   noLoop();
 }
 function draw() {
@@ -73,7 +75,8 @@ function draw() {
     end.neighbors[i].isWall = false;
   }
 
-  const visitedNodes = dijkstraAlgo();
+  dijkstraAlgo();
+
   path = [];
   let temp = end;
   path.push(temp);
@@ -88,10 +91,8 @@ function draw() {
     }
   }
 
-  end.display(color('#ff0000'));
-
-  for (let i = 0; i < visitedNodes.length; i++) {
-    visitedNodes[i].display(color('pink'));
+  for (let i = 0; i < visited.length; i++) {
+    visited[i].display(color('pink'));
   }
 
   for (let i = 0; i < path.length; i++) {
@@ -100,20 +101,16 @@ function draw() {
 }
 
 const dijkstraAlgo = () => {
-  const visited = [];
-  start.dist = 0;
   while (Q.length != 0) {
     Q.sort((nodeA, nodeB) => nodeA.dist - nodeB.dist);
     const current = Q.shift();
     if (current.isWall) continue;
     if (current.dist === Infinity) {
-      console.log('1 here');
       return visited;
     }
     current.isVisited = true;
     visited.push(current);
     if (current === end) {
-      console.log('2 here');
       return visited;
     }
     const unvisitedNei = current.neighbors.filter(nei => !nei.isVisited);
